@@ -79,11 +79,14 @@
         button:hover {
             background-color: #333333;
         }
+        .table-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
         table {
             width: 100%;
             margin-top: 20px;
             border-collapse: collapse;
-            overflow-x: auto;
         }
         table, th, td {
             border: 1px solid #ddd;
@@ -95,6 +98,18 @@
         th {
             background-color: #000000;
             color: white;
+        }
+        .edit-button, .save-button, .delete-button {
+            background-color: #000000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+        }
+        .edit-button:hover, .save-button:hover, .delete-button:hover {
+            background-color: #333333;
         }
         ul {
             list-style: none;
