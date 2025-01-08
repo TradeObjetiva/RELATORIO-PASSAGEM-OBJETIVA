@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Passagem</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px; /* Padding para mobile */
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            overflow-y: auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header img {
+            max-width: 150px;
+            display: block;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #000000;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        form div {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        label {
+            margin-bottom: 10px;
+            text-align: center;
+            color: #000000;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            background-color: #000000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #000000;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            overflow-x: auto;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #000000;
+            color: white;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            h1, h2, h3 {
+                font-size: 1.5em;
+            }
+            form div {
+                margin-bottom: 10px;
+            }
+            input, select, button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+        .hidden {
+            display: none;
+        }
+        input[type="checkbox"] {
+        -webkit-appearance: none; /* Remove o estilo nativo no iOS */
+        -moz-appearance: none; /* Remove o estilo nativo no Firefox */
+        appearance: none; /* Remove o estilo nativo */
+        width: 20px; /* Tamanho do checkbox */
+        height: 20px;
+        border: 2px solid #000; /* Borda personalizada */
+        border-radius: 4px; /* Cantos arredondados */
+        display: inline-block;
+        position: relative;
+        background-color: #fff;
+        cursor: pointer;
+    }
+
+    input[type="checkbox"]:checked {
+        background-color: #000; /* Fundo preenchido ao marcar */
+        border-color: #000;
+    }
+
+    input[type="checkbox"]:checked::after {
+        content: '✔'; /* Marca de seleção */
+        color: #fff;
+        font-size: 14px;
+        position: absolute;
+        top: 1px;
+        left: 4px;
+    }
+
+    input[type="checkbox"]:focus {
+        outline: none;
+        box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.2);
+    }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="LOGO_OFICIAL_OBJETIVA.png.png" alt="OBJETIVA MKT Logo">
+        </header>
+        <h1>Relatório de Passagem</h1>
+
+        <!-- Formulário para adicionar nome do colaborador e dados adicionais -->
+        <form id="colaboradorForm">
+            <div>
+                <label for="nomeCompleto">Nome Completo:</label>
+                <input type="text" id="nomeCompleto" required>
+            </div>
+            <div>
+                <label for="endereco">Endereço:</label>
+                <input type="text" id="endereco" required>
+            </div>
+            <div>
+                <label for="bairro">Bairro:</label>
+                <input type="text" id="bairro" required>
+            </div>
+            <div>
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade" required>
+            </div>
+            <div>
+                <label for="telefone">Telefone:</label>
+                <input type="number" id="telefone" required>
+            </div>
+            <div>
+                <label for="dataEnvio">Data de Envio:</label>
+                <input type="date" id="dataEnvio" required>
+            </div>
+            <div>
+                <label for="tipoRelatorio">Tipo de Relatório:</label>
+                <select id="tipoRelatorio" required>
+                    <option value="Reembolso">Reembolso</option>
+                    <option value="Rota">Rota</option>
+                </select>
+            </div>
+            <div>
+                <label for="equipe">Equipe:</label>
+                <select id="equipe" required>
+                    <option value="START">START</option>
+                    <option value="COMPARTILHADO">COMPARTILHADO</option>
+                    <option value="OLÉ">OLÉ</option>
+                    <option value="KIAN">KIAN</option>
+                    <option value="JULIATTO">JULIATTO</option>
+                    <option value="SUPERPLÁSTICOS">SUPER PLÁSTICOS</option>
+                    <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+                </select>
+            </div>
+            <div>
+                <label>
+                    <input type="checkbox" id="autorizacao" required>
+                    Autorizo a inclusão e a integração dos benefícios tarifários como o Bilhete Único Intermunicipal (BUI), Bilhete Único Carioca (BUC) ou quaisquer outros benefícios tarifários para fins de utilização no transporte público. Declaro, ainda, que esses benefícios serão devidamente registrados no relatório de vale-transporte.
+                </label>
+            </div>
+            <button type="submit">Salvar Dados</button>
+        </form>
+
+        <!-- Container da segunda etapa -->
+        <div id="etapa2" style="display: none;">
+            <!-- Formulário para adicionar dados -->
+            <form id="reportForm">
+                <div>
+                    <label for="dataVisita">Data da Visita:</label>
+                    <select id="dataVisita" required>
+                        <option value="segunda-feira">Segunda-feira</option>
+                        <option value="terça-feira">Terça-feira</option>
+                        <option value="quarta-feira">Quarta-feira</option>
+                        <option value="quinta-feira">Quinta-feira</option>
+                        <option value="sexta-feira">Sexta-feira</option>
+                        <option value="sábado">Sábado</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="ida">Ida:</label>
+                    <input type="text" id="ida" required>
+                </div>
+
+                <div>
+                    <label for="destino">Destino:</label>
+                    <input type="text" id="destino" required>
+                </div>
+
+                
+                <div>
+                    <label for="bilhetagem">Bilhetagem:</label>
+                    <select id="bilhetagem" required onchange="Outros()">
+                        <option value="rio card">Rio Card</option>
+                        <option value="jaé">Jaé</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <div id="otherField" style="display:none;">
+                    <label for="other">Por favor, especifique:</label>
+                    <input type="text" id="other" name="other">
+                </div>
+                
+            
+                <div>
+                    <label for="modal">Modal:</label>
+                    <select id="modal" required>
+                        <option value="ônibus">Ônibus</option>
+                        <option value="metrô">Metrô</option>
+                        <option value="trem">Trem</option>
+                        <option value="van">Van</option>
+                        <option value="barcas">Barcas</option>
+                        <option value="BRT">BRT</option>
+                        <option value="VLT">VLT</option>
+                        <option value="a pé">A Pé</option>
+                    </select>
+                </div>
+
+                <!-- Campo Número da Linha -->
+                <div id="numeroLinhaContainer" class="hidden">
+                    <label for="numeroLinha">Número da Linha:</label>
+                    <input type="text" id="numeroLinha">
+                </div>
+
+                <!-- Campo Tipo de Linha -->
+                <div id="tipoLinhaContainer" class="hidden">
+                    <label for="tipoLinha">Tipo de Linha:</label>
+                    <select id="tipoLinha">
+                        <option value="municipal">Municipal</option>
+                        <option value="intermunicipal">Intermunicipal</option>
+                    </select>
+                </div>
+
+                <div id="valorContainer">
+                    <label for="valor">Valor:</label>
+                    <input type="number" id="valor" step="0.01" required>
+                </div>
+
+                <button type="submit">Adicionar Relatório</button>
+            </form>
+
+            <!-- Tabela para exibir os relatórios -->
+            <h2>RELATÓRIOS ADICIONADOS</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>DATA DA VISITA</th>
+                        <th>IDA</th>
+                        <th>DESTINO</th>
+                        <th>BILHETAGEM</th>
+                        <th>MODAL</th>
+                        <th>NÚMERO DA LINHA</th>
+                        <th>TIPO DE LINHA</th>
+                        <th>VALOR</th>
+                        <th>AÇÕES</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <!-- Relatórios serão adicionados aqui -->
+                </tbody>
+            </table>
+
+            <h3>Totais por Dia da Semana</h3>
+            <ul id="totalsList">
+                <!-- Totais serão exibidos aqui -->
+            </ul>
+
+                        <!-- Botões para exportar os relatórios -->
+            <button id="exportPdfButton">Exportar Relatórios para PDF</button>
+            <button id="exportExcelButton">Exportar Relatórios para Excel</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.18.5/package/dist/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
