@@ -165,6 +165,14 @@
             outline: none;
             box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.2);
         }
+
+        #reportTableContainer {
+            max-height: 300px; /* Ajuste a altura conforme necessário */
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+
     </style>
 
 </head>
@@ -301,7 +309,8 @@
 
                 <div id="valorContainer">
                     <label for="valor">Valor:</label>
-                    <input type="number" id="valor" step="0.01" required>
+                    <input type="text" id="valor" oninput="formatValor(this)">
+
                 </div>
 
                 <button type="submit">Adicionar Relatório</button>
