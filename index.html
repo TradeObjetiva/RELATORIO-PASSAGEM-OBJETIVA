@@ -203,7 +203,7 @@
             </div>
             <div>
                 <label for="telefone">Telefone:</label>
-                <input type="number" id="telefone" required>
+                 <input type="number" id="telefone" inputmode="numeric" required>
             </div>
             <div>
                 <label for="dataEnvio">Data de Envio:</label>
@@ -309,8 +309,8 @@
 
                 <div id="valorContainer">
                     <label for="valor">Valor:</label>
-                    <input id="valor" type="text" inputmode="numeric" />
-                    
+                    <input type="text" id="valor" oninput="formatValor(this)" inputmode="decimal" />
+
                 </div>
 
                 <button type="submit">Adicionar Relatório</button>
