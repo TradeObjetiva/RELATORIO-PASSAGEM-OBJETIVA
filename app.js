@@ -129,6 +129,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     modalSelect.addEventListener('change', handleModalChange);
 
+    // Função para formatar o campo de valor
+    function formatValor(input) {
+        // Remove caracteres não-numéricos
+        let valor = input.value.replace(/[^\d]/g, '');
+
+        // Limita a 4 dígitos
+        valor = valor.substring(0, 4);
+
+        // Adiciona separador decimal
+        if (valor.length > 2) {
+            valor = valor.substring(0, valor.length - 2) + '.' + valor.substring(valor.length - 2);
+        }
+
+        input.value = valor;
+    }
+
+    // Event listener para o campo de valor
+    document.getElementById('valor').addEventListener('input', function () {
+        formatValor(this);
+    });
+
     exportPdfButton.addEventListener('click', function () {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -195,6 +216,6 @@ document.addEventListener("DOMContentLoaded", function () {
         row.remove();
         updateTotals();
     };
-
+    
     document.getElementById('bilhetagem').addEventListener('change', showOtherField);
 });
