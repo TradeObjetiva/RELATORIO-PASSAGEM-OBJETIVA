@@ -1,7 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Elementos do DOM
     const colaboradorForm = document.getElementById('colaboradorForm');
     const etapa2 = document.getElementById('etapa2');
-    const form = document.getElementById('reportForm');
+    const reportForm = document.getElementById('reportForm');
     const reportTableBody = document.getElementById('reportTableBody');
     const totalsList = document.getElementById('totalsList');
     const exportPdfButton = document.getElementById('exportPdfButton');
@@ -10,12 +11,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const tipoLinhaContainer = document.getElementById('tipoLinhaContainer');
     const valorContainer = document.getElementById('valorContainer');
     const modalSelect = document.getElementById('modal');
+    const bilhetagemSelect = document.getElementById('bilhetagem');
+    const otherField = document.getElementById('otherField');
 
+    // Dados da aplicação
     let reports = [];
     let dailyTotals = {};
     let colaboradorData = {};
 
-    colaboradorForm.addEventListener('submit', function (event) {
+    // Event Listeners
+    colaboradorForm.addEventListener('submit', handleColaboradorSubmit);
+    reportForm.addEventListener('submit', handleReportSubmit);
+    modalSelect.addEventListener('change', handleModalChange);
+    bilhetagemSelect.addEventListener('change', showOtherField);
+    exportPdfButton.addEventListener('click', exportToPDF);
+    exportExcelButton.addEventListener('click', exportToExcel);
+    document.getElementById('valor').addEventListener('input', function () {
+        formatValor(this);
+    });
+
+    // Funções de manipulação de eventos
+    function handleColaboradorSubmit(event) {
         event.preventDefault();
 
         if (!document.getElementById('autorizacao').checked) {
@@ -32,14 +48,15 @@ document.addEventListener("DOMContentLoaded", function () {
             dataEnvio: document.getElementById('dataEnvio').value,
             tipoRelatorio: document.getElementById('tipoRelatorio').value.toUpperCase(),
             equipe: document.getElementById('equipe').value.toUpperCase(),
+            autorizacao: document.getElementById('autorizacao').checked
         };
 
         colaboradorForm.style.display = 'none';
         etapa2.style.display = 'block';
         handleModalChange();
-    });
+    }
 
-    form.addEventListener('submit', function (event) {
+    function handleReportSubmit(event) {
         event.preventDefault();
 
         const report = {
@@ -62,11 +79,12 @@ document.addEventListener("DOMContentLoaded", function () {
         addReportToTable(report);
         updateTotals();
 
-        form.reset();
+        reportForm.reset();
         document.getElementById('dataVisita').value = report.dataVisita;
         handleModalChange();
-    });
+    }
 
+    // Funções auxiliares
     function addReportToTable(report) {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -77,8 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
             <td>${report.modal}</td>
             <td>${report.numeroLinha || '-'}</td>
             <td>${report.tipoLinha || '-'}</td>
-            <td>${report.valor.toFixed(2)}</td>
-            <td><button type="button" onclick="removeReport(this)">REMOVER</button></td>
+            <td>R$ ${report.valor.toFixed(2)}</td>
+            <td><button type="button" class="delete-button" onclick="removeReport(this)">REMOVER</button></td>
         `;
         reportTableBody.appendChild(row);
     }
@@ -98,14 +116,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showOtherField() {
-        const bilhetagem = document.getElementById("bilhetagem").value;
-        const otherField = document.getElementById("otherField");
-    
-        if (bilhetagem === "outros") {
+        if (bilhetagemSelect.value === "outros") {
             otherField.style.display = "block";
         } else {
             otherField.style.display = "none";
-            document.getElementById("other").value = ""; // Limpa o campo ao esconder
+            document.getElementById("other").value = "";
         }
     }
 
@@ -127,73 +142,159 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    modalSelect.addEventListener('change', handleModalChange);
-
-    // Função para formatar o campo de valor
     function formatValor(input) {
-        // Remove caracteres não-numéricos
         let valor = input.value.replace(/[^\d]/g, '');
-
-        // Limita a 4 dígitos
         valor = valor.substring(0, 4);
-
-        // Adiciona separador decimal
         if (valor.length > 2) {
             valor = valor.substring(0, valor.length - 2) + '.' + valor.substring(valor.length - 2);
         }
-
         input.value = valor;
     }
 
-    // Event listener para o campo de valor
-    document.getElementById('valor').addEventListener('input', function () {
-        formatValor(this);
-    });
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
 
-    exportPdfButton.addEventListener('click', function () {
+    // Funções de exportação
+    function exportToPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
+        // Cabeçalho e dados do colaborador
         doc.setFontSize(16);
-        doc.text("RELATÓRIO DE PASSAGEM", 105, 20, null, null, "center");
+        doc.text("RELATÓRIO DE PASSAGEM", 105, 20, { align: 'center' });
 
         doc.setFontSize(10);
-        Object.entries(colaboradorData).forEach(([key, value], index) => {
-            doc.text(`${key.toUpperCase()}: ${value}`, 14, 30 + index * 10);
+        let yPosition = 30;
+        
+        const colaboradorFields = [
+            `NOME: ${colaboradorData.nomeCompleto}`,
+            `ENDEREÇO: ${colaboradorData.endereco}`,
+            `BAIRRO: ${colaboradorData.bairro}`,
+            `CIDADE: ${colaboradorData.cidade}`,
+            `TELEFONE: ${colaboradorData.telefone}`,
+            `DATA DE ENVIO: ${formatDate(colaboradorData.dataEnvio)}`,
+            `TIPO DE RELATÓRIO: ${colaboradorData.tipoRelatorio}`,
+            `EQUIPE: ${colaboradorData.equipe}`
+        ];
+
+        colaboradorFields.forEach(field => {
+            doc.text(field, 14, yPosition);
+            yPosition += 10;
         });
 
-        doc.autoTable({
-            startY: 110,
-            head: [['DATA DA VISITA', 'IDA', 'DESTINO', 'BILHETAGEM', 'MODAL', 'NÚMERO DA LINHA', 'TIPO DE LINHA', 'VALOR']],
-            body: reports.map(report => [
-                report.dataVisita, report.ida, report.destino, report.bilhetagem, 
-                report.modal, report.numeroLinha || '-', report.tipoLinha || '-', 
-                report.valor.toFixed(2)
-            ])
-        });
+        yPosition += 10;
 
-        let startY = doc.lastAutoTable.finalY + 10;
-        doc.text("TOTAIS POR DIA:", 14, startY);
-        startY += 10;
-        for (const [day, total] of Object.entries(dailyTotals)) {
-            doc.text(`${day}: R$ ${total.toFixed(2)}`, 14, startY);
+        // Termo de Autorização
+        doc.setFontSize(12);
+        doc.text("TERMO DE AUTORIZAÇÃO", 105, yPosition, { align: 'center' });
+        yPosition += 10;
+
+        doc.setFontSize(10);
+        const autorizacaoText = [
+            `Eu, ${colaboradorData.nomeCompleto}, residente no endereço ${colaboradorData.endereco}, `,
+            `${colaboradorData.bairro}, ${colaboradorData.cidade}, autorizo a inclusão e a integração dos `,
+            "benefícios tarifários como o Bilhete Único Intermunicipal (BUI), Bilhete Único Carioca (BUC) ou ",
+            "quaisquer outros benefícios tarifários para fins de utilização no transporte público. Declaro, ainda, ",
+            "que esses benefícios serão devidamente registrados no relatório de vale-transporte."
+        ];
+        
+        doc.text(autorizacaoText, 15, yPosition, { maxWidth: 180, align: 'justify' });
+        
+        // Tabela de relatórios (se houver)
+        if (reports.length > 0) {
+            doc.addPage();
+            doc.setFontSize(16);
+            doc.text("RELATÓRIOS DE PASSAGEM", 105, 20, { align: 'center' });
+
+            doc.autoTable({
+                startY: 30,
+                head: [['DATA DA VISITA', 'IDA', 'DESTINO', 'BILHETAGEM', 'MODAL', 'NÚMERO DA LINHA', 'TIPO DE LINHA', 'VALOR']],
+                body: reports.map(report => [
+                    report.dataVisita, 
+                    report.ida, 
+                    report.destino, 
+                    report.bilhetagem, 
+                    report.modal, 
+                    report.numeroLinha || '-', 
+                    report.tipoLinha || '-', 
+                    'R$ ' + report.valor.toFixed(2)
+                ]),
+                margin: { horizontal: 15 },
+                styles: { fontSize: 5, cellPadding: 3 },
+                headerStyles: { fillColor: [0, 0, 0], textColor: 255 }
+            });
+
+            // Totais
+            let startY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(12);
+            doc.text("TOTAIS POR DIA:", 14, startY);
             startY += 10;
+            
+            for (const [day, total] of Object.entries(dailyTotals)) {
+                doc.text(`${day}: R$ ${total.toFixed(2)}`, 14, startY);
+                startY += 10;
+            }
+
+            const weeklyTotal = Object.values(dailyTotals).reduce((sum, total) => sum + total, 0);
+            doc.text(`TOTAL SEMANAL: R$ ${weeklyTotal.toFixed(2)}`, 14, startY + 10);
         }
 
-        const weeklyTotal = Object.values(dailyTotals).reduce((sum, total) => sum + total, 0);
-        doc.text(`TOTAL SEMANAL: R$ ${weeklyTotal.toFixed(2)}`, 14, startY + 10);
+        doc.save(`Relatorio_Passagem_${colaboradorData.nomeCompleto}.pdf`);
+    }
 
-        doc.save('relatorio_de_passagem.pdf');
-    });
-
-    exportExcelButton.addEventListener('click', function () {
+    function exportToExcel() {
         const wb = XLSX.utils.book_new();
 
-        const wsEtapa1 = XLSX.utils.aoa_to_sheet(
-            Object.entries(colaboradorData).map(([key, value]) => [key.toUpperCase(), value])
-        );
-        XLSX.utils.book_append_sheet(wb, wsEtapa1, 'Dados Iniciais');
+        // Planilha 1: Dados do Colaborador e Termo de Autorização
+        const colaboradorSheetData = [
+            ["RELATÓRIO DE PASSAGEM"],
+            [""],
+            ["DADOS DO COLABORADOR"],
+            ["Nome Completo:", colaboradorData.nomeCompleto],
+            ["Endereço:", colaboradorData.endereco],
+            ["Bairro:", colaboradorData.bairro],
+            ["Cidade:", colaboradorData.cidade],
+            ["Telefone:", colaboradorData.telefone],
+            ["Data de Envio:", formatDate(colaboradorData.dataEnvio)],
+            ["Tipo de Relatório:", colaboradorData.tipoRelatorio],
+            ["Equipe:", colaboradorData.equipe],
+            [""],
+            ["TERMO DE AUTORIZAÇÃO"],
+            [""],
+            ["Eu, " + colaboradorData.nomeCompleto + ", residente no endereço " + colaboradorData.endereco + ", " + 
+             colaboradorData.bairro + ", " + colaboradorData.cidade + ", autorizo a inclusão e a integração dos " +
+             "benefícios tarifários como o Bilhete Único Intermunicipal (BUI), Bilhete Único Carioca (BUC) ou " +
+             "quaisquer outros benefícios tarifários para fins de utilização no transporte público. Declaro, ainda, " +
+             "que esses benefícios serão devidamente registrados no relatório de vale-transporte."],
+            [""],
+            ["Assinatura do Colaborador: _________________________________________"]
+        ];
 
+        const wsColaborador = XLSX.utils.aoa_to_sheet(colaboradorSheetData);
+        
+        wsColaborador['!cols'] = [
+            { wch: 30 },
+            { wch: 60 }
+        ];
+        
+        wsColaborador['!merges'] = [
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } },
+            { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } },
+            { s: { r: 12, c: 0 }, e: { r: 12, c: 1 } },
+            { s: { r: 14, c: 0 }, e: { r: 14, c: 1 } },
+            { s: { r: 16, c: 0 }, e: { r: 16, c: 1 } },
+            { s: { r: 18, c: 0 }, e: { r: 18, c: 1 } }
+        ];
+        
+        XLSX.utils.book_append_sheet(wb, wsColaborador, 'Dados e Autorização');
+
+        // Planilha 2: Relatórios de Passagem
         const wsReports = XLSX.utils.json_to_sheet(reports.map(report => ({
             'DATA DA VISITA': report.dataVisita,
             'IDA': report.ida,
@@ -202,13 +303,26 @@ document.addEventListener("DOMContentLoaded", function () {
             'MODAL': report.modal,
             'NÚMERO DA LINHA': report.numeroLinha || '-',
             'TIPO DE LINHA': report.tipoLinha || '-',
-            'VALOR': report.valor.toFixed(2)
+            'VALOR': 'R$ ' + report.valor.toFixed(2)
         })));
         XLSX.utils.book_append_sheet(wb, wsReports, 'Relatórios');
 
-        XLSX.writeFile(wb, 'relatorio_de_passagem.xlsx');
-    });
+        // Planilha 3: Totais
+        const totalsData = [
+            ['DIA', 'TOTAL'],
+            ...Object.entries(dailyTotals).map(([day, total]) => [day, 'R$ ' + total.toFixed(2)])
+        ];
+        
+        const weeklyTotal = Object.values(dailyTotals).reduce((sum, total) => sum + total, 0);
+        totalsData.push(['TOTAL SEMANAL', 'R$ ' + weeklyTotal.toFixed(2)]);
+        
+        const wsTotals = XLSX.utils.aoa_to_sheet(totalsData);
+        XLSX.utils.book_append_sheet(wb, wsTotals, 'Totais');
 
+        XLSX.writeFile(wb, `Relatorio_Passagem_${colaboradorData.nomeCompleto}.xlsx`);
+    }
+
+    // Função global para remover relatórios
     window.removeReport = function (button) {
         const row = button.closest('tr');
         const index = Array.from(reportTableBody.children).indexOf(row);
@@ -216,6 +330,4 @@ document.addEventListener("DOMContentLoaded", function () {
         row.remove();
         updateTotals();
     };
-    
-    document.getElementById('bilhetagem').addEventListener('change', showOtherField);
 });
