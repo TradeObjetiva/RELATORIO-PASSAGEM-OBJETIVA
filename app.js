@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // Página 1: Dados do colaborador (mantido igual)
+        // Página 1: Dados do colaborador
         doc.setFontSize(16);
         doc.text("RELATÓRIO DE PASSAGEM", 105, 20, { align: 'center' });
 
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         yPosition += 10;
 
-        // Termo de Autorização (mantido igual)
+        // Termo de Autorização
         doc.setFontSize(12);
         doc.text("TERMO DE AUTORIZAÇÃO", 105, yPosition, { align: 'center' });
         yPosition += 10;
@@ -207,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
         doc.text(autorizacaoText, 15, yPosition, { maxWidth: 180, align: 'justify' });
 
         if (reports.length > 0) {
-            // Página 2: RELATÓRIOS DETALHADOS (antiga página 3)
+            // Página 2: RELATÓRIOS DETALHADOS
             doc.addPage();
             doc.setFontSize(16);
             doc.text("RELATÓRIOS DETALHADOS", 105, 20, { align: 'center' });
@@ -226,17 +226,31 @@ document.addEventListener("DOMContentLoaded", function () {
                     'R$ ' + report.valor.toFixed(2)
                 ]),
                 margin: { horizontal: 15 },
-                styles: { fontSize: 5, cellPadding: 3 },
+                styles: { fontSize: 8, cellPadding: 3 },
                 headerStyles: { fillColor: [0, 0, 0], textColor: 255 }
             });
 
-            // Página 3: RESUMO E TOTAIS (antigas páginas 2 e 4 unidas)
+            // Página 3: RESUMO E TOTAIS
             doc.addPage();
 
-            // Cálculos necessários
+            // Calcular totais
             const bilhetagemTotals = {};
+            const dailyTotals = {};
+            const bilhetagemPorDia = {};
+
             reports.forEach(report => {
+                // Totais por bilhetagem
                 bilhetagemTotals[report.bilhetagem] = (bilhetagemTotals[report.bilhetagem] || 0) + report.valor;
+
+                // Totais por dia
+                dailyTotals[report.dataVisita] = (dailyTotals[report.dataVisita] || 0) + report.valor;
+
+                // Totais por bilhetagem por dia
+                if (!bilhetagemPorDia[report.dataVisita]) {
+                    bilhetagemPorDia[report.dataVisita] = {};
+                }
+                bilhetagemPorDia[report.dataVisita][report.bilhetagem] =
+                    (bilhetagemPorDia[report.dataVisita][report.bilhetagem] || 0) + report.valor;
             });
 
             // Seção de Resumo por Bilhetagem
@@ -254,6 +268,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 doc.text(bilhetagem, 20, yPos);
                 doc.text(`R$ ${total.toFixed(2)}`, 150, yPos);
                 yPos += 10;
+            }
+
+            // Seção de Totais por Bilhetagem por Dia
+            yPos += 15;
+            doc.setFontSize(16);
+            doc.text("TOTAIS POR BILHETAGEM POR DIA", 105, yPos, { align: 'center' });
+            yPos += 10;
+
+            doc.setFontSize(10);
+            for (const [dia, bilhetagens] of Object.entries(bilhetagemPorDia)) {
+                doc.text(`Dia: ${dia}`, 20, yPos);
+                yPos += 7;
+
+                for (const [bilhetagem, total] of Object.entries(bilhetagens)) {
+                    doc.text(`- ${bilhetagem}: R$ ${total.toFixed(2)}`, 25, yPos);
+                    yPos += 7;
+                }
+                yPos += 5;
             }
 
             // Seção de Totais por Dia
@@ -282,7 +314,27 @@ document.addEventListener("DOMContentLoaded", function () {
     function exportToExcel() {
         const wb = XLSX.utils.book_new();
 
-        // Planilha 1: Dados do Colaborador (mantido igual)
+        // Calcular totais
+        const bilhetagemTotals = {};
+        const dailyTotals = {};
+        const bilhetagemPorDia = {};
+
+        reports.forEach(report => {
+            // Totais por bilhetagem
+            bilhetagemTotals[report.bilhetagem] = (bilhetagemTotals[report.bilhetagem] || 0) + report.valor;
+
+            // Totais por dia
+            dailyTotals[report.dataVisita] = (dailyTotals[report.dataVisita] || 0) + report.valor;
+
+            // Totais por bilhetagem por dia
+            if (!bilhetagemPorDia[report.dataVisita]) {
+                bilhetagemPorDia[report.dataVisita] = {};
+            }
+            bilhetagemPorDia[report.dataVisita][report.bilhetagem] =
+                (bilhetagemPorDia[report.dataVisita][report.bilhetagem] || 0) + report.valor;
+        });
+
+        // Planilha 1: Dados do Colaborador
         const colaboradorSheetData = [
             ["RELATÓRIO DE PASSAGEM"],
             [""],
@@ -310,7 +362,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const wsColaborador = XLSX.utils.aoa_to_sheet(colaboradorSheetData);
         XLSX.utils.book_append_sheet(wb, wsColaborador, 'Dados e Autorização');
 
-        // Planilha 2: Relatórios Detalhados (antiga aba 3)
+        // Planilha 2: Relatórios Detalhados
         const wsReports = XLSX.utils.json_to_sheet(reports.map(report => ({
             'DATA DA VISITA': report.dataVisita,
             'IDA': report.ida,
@@ -319,32 +371,36 @@ document.addEventListener("DOMContentLoaded", function () {
             'MODAL': report.modal,
             'NÚMERO DA LINHA': report.numeroLinha || '-',
             'TIPO DE LINHA': report.tipoLinha || '-',
-            'VALOR': 'R$ ' + report.valor.toFixed(2)
+            'VALOR': report.valor.toFixed(2)
         })));
         XLSX.utils.book_append_sheet(wb, wsReports, 'Relatórios');
 
-        // Planilha 3: Resumo e Totais (antigas abas 2 e 4 unidas)
-        const bilhetagemTotals = {};
-        reports.forEach(report => {
-            bilhetagemTotals[report.bilhetagem] = (bilhetagemTotals[report.bilhetagem] || 0) + report.valor;
-        });
-
+        // Planilha 3: Resumo e Totais
         const combinedData = [
             ["RESUMO POR BILHETAGEM"],
             [""],
             ["Bilhetagem", "Valor Total"],
             ...Object.entries(bilhetagemTotals).map(([bilhetagem, total]) =>
-                [bilhetagem, 'R$ ' + total.toFixed(2)]
+                [bilhetagem, total.toFixed(2)]
+            ),
+            ["", ""],
+            ["TOTAIS POR BILHETAGEM POR DIA"],
+            [""],
+            ["Data", "Bilhetagem", "Valor Total"],
+            ...Object.entries(bilhetagemPorDia).flatMap(([dia, bilhetagens]) =>
+                Object.entries(bilhetagens).map(([bilhetagem, total]) =>
+                    [dia, bilhetagem, total.toFixed(2)]
+                )
             ),
             ["", ""],
             ["TOTAIS POR DIA"],
             [""],
             ["Data", "Total"],
             ...Object.entries(dailyTotals).map(([day, total]) =>
-                [day, 'R$ ' + total.toFixed(2)]
+                [day, total.toFixed(2)]
             ),
             ["", ""],
-            ["TOTAL GERAL", 'R$ ' + Object.values(bilhetagemTotals).reduce((sum, total) => sum + total, 0).toFixed(2)]
+            ["TOTAL GERAL", Object.values(bilhetagemTotals).reduce((sum, total) => sum + total, 0).toFixed(2)]
         ];
 
         const wsCombined = XLSX.utils.aoa_to_sheet(combinedData);
