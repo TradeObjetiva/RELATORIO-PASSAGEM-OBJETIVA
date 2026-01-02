@@ -1,357 +1,625 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Passagem</title>
+    <title>Relatório de Passagem - Objetiva MKT</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f39200;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px; /* Padding para mobile */
-            box-sizing: border-box;
-            overflow-x: hidden; /* Evita rolagem lateral */
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 90vw; /* Usa largura da viewport */
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        header img {
-            max-width: 150px;
-            display: block;
-            margin: 0 auto;
-            width: 100%;
-            height: auto;
-        }
-        h1, h2, h3 {
-            text-align: center;
-            color: #000000;
-            margin: 0;
-            padding-bottom: 10px;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        form div {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
-        label {
-            margin-bottom: 10px;
-            text-align: center;
-            color: #000000;
-        }
-        input, select, button, textarea {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #000000;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #333333;
-        }
-        .table-container {
-            max-width: 100%;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #000000;
-            color: white;
-        }
-        .edit-button, .save-button, .delete-button {
-            background-color: #000000;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            margin-top: 5px;
-            border-radius: 4px;
-        }
-        .edit-button:hover, .save-button:hover, .delete-button:hover {
-            background-color: #333333;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            h1, h2, h3 {
-                font-size: 1.5em;
-            }
-            form div {
-                margin-bottom: 10px;
-            }
-            input, select, button, textarea {
-                font-size: 14px;
-                padding: 8px;
-            }
-        }
-        .hidden {
-            display: none;
-        }
-        input[type="checkbox"] {
-            -webkit-appearance: none; /* Remove o estilo nativo no iOS */
-            -moz-appearance: none; /* Remove o estilo nativo no Firefox */
-            appearance: none; /* Remove o estilo nativo */
-            width: 20px; /* Tamanho do checkbox */
-            height: 20px;
-            border: 2px solid #000; /* Borda personalizada */
-            border-radius: 4px; /* Cantos arredondados */
-            display: inline-block;
-            position: relative;
-            background-color: #fff;
-            cursor: pointer;
-        }
-
-        input[type="checkbox"]:checked {
-            background-color: #000; /* Fundo preenchido ao marcar */
-            border-color: #000;
-        }
-
-        input[type="checkbox"]:checked::after {
-            content: '✔'; /* Marca de seleção */
-            color: #fff;
-            font-size: 14px;
-            position: absolute;
-            top: 1px;
-            left: 4px;
-        }
-
-        input[type="checkbox"]:focus {
-            outline: none;
-            box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        #reportTableContainer {
-            max-height: 300px; /* Ajuste a altura conforme necessário */
-            overflow-y: auto;
-            overflow-x: auto;
-            border: 1px solid #ddd;
-        }
-
-    </style>
-
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
+    <!-- Container Principal -->
     <div class="container">
+        <!-- Header -->
         <header>
-            <img src="LOGO_OFICIAL_OBJETIVA.png.png" alt="OBJETIVA MKT Logo">
+            <div class="header-logo">
+                <div class="logo-placeholder">
+                    <img src="LOGO_OFICIAL_OBJETIVA.png.png" alt="Logo Objetiva MKT" class="logo-img">
+                </div>
+                <div class="header-title">
+                    <h1>Relatório de Passagem</h1>
+
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-badge" id="currentStep">Etapa 1 de 2</div>
+            </div>
         </header>
-        <h1>Relatório de Passagem</h1>
 
-        <!-- Formulário para adicionar nome do colaborador e dados adicionais -->
-        <form id="colaboradorForm">
-            <div>
-                <label for="nomeCompleto">Nome Completo:</label>
-                <input type="text" id="nomeCompleto" required>
-            </div>
-            <div>
-                <label for="endereco">Endereço:</label>
-                <input type="text" id="endereco" required>
-            </div>
-            <div>
-                <label for="bairro">Bairro:</label>
-                <input type="text" id="bairro" required>
-            </div>
-            <div>
-                <label for="cidade">Cidade:</label>
-                <input type="text" id="cidade" required>
-            </div>
-            <div>
-                <label for="telefone">Telefone:</label>
-                 <input type="number" id="telefone" inputmode="numeric" required>
-            </div>
-            <div>
-                <label for="dataEnvio">Data de Envio:</label>
-                <input type="date" id="dataEnvio" required>
-            </div>
-            <div>
-                <label for="tipoRelatorio">Tipo de Relatório:</label>
-                <select id="tipoRelatorio" required>
-                    <option value="Reembolso">Reembolso</option>
-                    <option value="Rota">Rota</option>
-                </select>
-            </div>
-            <div>
-                <label for="equipe">Equipe:</label>
-                <select id="equipe" required>
-                    <option value="START">START</option>
-                    <option value="COMPARTILHADO">COMPARTILHADO</option>
-                    <option value="OLÉ">OLÉ</option>
-                    <option value="KIAN">KIAN</option>
-                    <option value="JULIATTO">JULIATTO</option>
-                    <option value="SUPERPLÁSTICOS">SUPER PLÁSTICOS</option>
-                    <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
-                </select>
-            </div>
-            <div>
-                <label>
-                    <input type="checkbox" id="autorizacao" required>
-                    Autorizo a inclusão e a integração dos benefícios tarifários como o Bilhete Único Intermunicipal (BUI), Bilhete Único Carioca (BUC) ou quaisquer outros benefícios tarifários para fins de utilização no transporte público. Declaro, ainda, que esses benefícios serão devidamente registrados no relatório de vale-transporte.
-                </label>
-            </div>
-            <button type="submit">AUTORIZAR E SEGUIR PARA A PRÓXIMA ETAPA</button>
-        </form>
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Etapa 1: Dados do Colaborador -->
+            <section id="etapa1" class="form-section active">
+                <form id="colaboradorForm">
+                    <div class="section-title">
+                        <i class="fas fa-user-circle"></i>
+                        <h2>Dados do Colaborador</h2>
+                    </div>
 
-        <!-- Container da segunda etapa -->
-        <div id="etapa2" style="display: none;">
-            <!-- Formulário para adicionar dados -->
-            <form id="reportForm">
-                <div>
-                    <label for="dataVisita">Data da Visita:</label>
-                    <select id="dataVisita" required>
-                        <option value="segunda-feira">Segunda-feira</option>
-                        <option value="terça-feira">Terça-feira</option>
-                        <option value="quarta-feira">Quarta-feira</option>
-                        <option value="quinta-feira">Quinta-feira</option>
-                        <option value="sexta-feira">Sexta-feira</option>
-                        <option value="sábado">Sábado</option>
-                    </select>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nomeCompleto">
+                                <i class="fas fa-user"></i> Nome Completo *
+                            </label>
+                            <input type="text" id="nomeCompleto" required placeholder="Digite seu nome completo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endereco">
+                                <i class="fas fa-home"></i> Endereço *
+                            </label>
+                            <input type="text" id="endereco" required placeholder="Rua, número">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bairro">
+                                <i class="fas fa-map-marker-alt"></i> Bairro *
+                            </label>
+                            <input type="text" id="bairro" required placeholder="Nome do bairro">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cidade">
+                                <i class="fas fa-city"></i> Cidade *
+                            </label>
+                            <input type="text" id="cidade" required placeholder="Nome da cidade">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefone">
+                                <i class="fas fa-phone"></i> Telefone *
+                            </label>
+                            <input type="tel" id="telefone" required placeholder="(11) 99999-9999">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dataEnvio">
+                                <i class="fas fa-calendar-alt"></i> Data de Envio *
+                            </label>
+                            <input type="date" id="dataEnvio" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tipoRelatorio">
+                                <i class="fas fa-file-alt"></i> Tipo de Relatório *
+                            </label>
+                            <select id="tipoRelatorio" required>
+                                <option value="">Selecione...</option>
+                                <option value="Rota">Rota</option>
+                                <option value="Reembolso">Reembolso</option>
+                            </select>
+                        </div>
+
+                        <!-- Período do Reembolso (aparece apenas quando tipo é Reembolso) -->
+                        <div id="periodoReembolsoContainer" class="periodo-container hidden">
+                            <div class="form-group">
+                                <label for="dataInicio">
+                                    <i class="fas fa-calendar-plus"></i> Data Início *
+                                </label>
+                                <input type="date" id="dataInicio">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dataFim">
+                                    <i class="fas fa-calendar-minus"></i> Data Fim *
+                                </label>
+                                <input type="date" id="dataFim">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="equipe">
+                                <i class="fas fa-users"></i> Equipe *
+                            </label>
+                            <select id="equipe" required>
+                                <option value="">Selecione...</option>
+                                <option value="EXCLUSIVO">EXCLUSIVO</option>
+                                <option value="COMPARTILHADO">COMPARTILHADO</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Termo de Autorização -->
+                    <div class="termo-container">
+                        <div class="termo-header">
+                            <i class="fas fa-file-signature"></i>
+                            <h3>Termo de Autorização</h3>
+                        </div>
+
+                        <div class="termo-content">
+                            <p>
+                                Eu, <span class="termo-nome" id="termoNome">[NOME DO COLABORADOR]</span>, residente no
+                                endereço
+                                <span class="termo-endereco" id="termoEndereco">[ENDEREÇO COMPLETO]</span>,
+                                DECLARO que todas as informações apresentadas neste Relatório de Passagem foram por mim
+                                fornecidas
+                                de forma verdadeira, completa e correspondente ao meu efetivo deslocamento entre a
+                                residência
+                                e o local de trabalho, e vice-versa.
+                            </p>
+                            <p>
+                                Reconheço que é de minha exclusiva responsabilidade o correto preenchimento deste
+                                documento,
+                                incluindo as integrações tarifárias utilizadas, quando aplicável.
+                            </p>
+                            <p>
+                                Estou ciente de que qualquer informação incorreta, omissão, adulteração ou preenchimento
+                                que resulte em vantagem indevida ou prejuízo à empresa poderá caracterizar falta
+                                disciplinar,
+                                sujeitando-me às medidas previstas na Consolidação das Leis do Trabalho (CLT), bem como
+                                nas
+                                normas internas da empresa.
+                            </p>
+                        </div>
+
+                        <div class="checkbox-container">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="autorizacao" required>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-text">
+                                    Li e concordo com os termos acima descritos
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Assinatura Digital -->
+                    <div id="assinaturaContainer" class="assinatura-container">
+                        <div class="assinatura-header">
+                            <i class="fas fa-signature"></i>
+                            <h3>Assinatura Digital</h3>
+                            <span class="required-badge">Opcional</span>
+                        </div>
+
+                        <div class="assinatura-instruction">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Assine na área abaixo para autorizar o relatório (opcional)</p>
+                        </div>
+
+                        <div class="signature-instructions">
+                            <div class="instruction-desktop">
+                                <i class="fas fa-mouse-pointer"></i>
+                                <p>Clique e arraste com o mouse para assinar abaixo</p>
+                            </div>
+                            <div class="instruction-mobile">
+                                <i class="fas fa-hand-pointer"></i>
+                                <p>Toque e arraste com o dedo para assinar abaixo</p>
+                            </div>
+                        </div>
+
+                        <div class="assinatura-preview">
+                            <div class="preview-container">
+                                <div class="canvas-wrapper" id="assinaturaTrigger">
+                                    <canvas id="canvasColaborador"></canvas>
+                                    <div class="canvas-placeholder">
+                                        <i class="fas fa-signature"></i>
+                                        <p>Área de assinatura (opcional)</p>
+                                    </div>
+                                </div>
+                                <div class="assinatura-controls">
+                                    <button type="button" id="limparAssinaturaColaborador" class="btn btn-limpar">
+                                        <i class="fas fa-eraser"></i> Limpar
+                                    </button>
+                                    <button type="button" id="openFullscreenBtn" class="btn btn-secondary">
+                                        <i class="fas fa-expand"></i> Tela Cheia
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="assinatura-hint">
+                                <i class="fas fa-lightbulb"></i>
+                                Assinatura opcional - você pode prosseguir sem assinar
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Autorização -->
+                    <div class="form-actions">
+                        <button type="submit" id="btnAutorizar" class="btn btn-primary btn-large">
+                            <i class="fas fa-check-circle"></i>
+                            <span>PROSSEGUIR PARA REGISTRO DE PASSAGENS</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <div class="form-hint">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Preencha todos os campos obrigatórios para continuar
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Etapa 2: Registro de Passagens -->
+            <section id="etapa2" class="form-section">
+                <div class="section-header">
+                    <div class="back-button" id="backButton">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Voltar</span>
+                    </div>
+                    <div class="section-title">
+                        <i class="fas fa-bus"></i>
+                        <h2>Registro de Passagens</h2>
+                    </div>
+                    <div class="colaborador-info">
+                        <div class="info-badge">
+                            <i class="fas fa-user"></i>
+                            <span id="colaboradorNome">NOME DO COLABORADOR</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="ida">Ida:</label>
-                    <input type="text" id="ida" required>
+                <!-- Formulário de Passagem -->
+                <form id="reportForm" class="passagem-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dataVisita">
+                                <i class="fas fa-calendar-day"></i> Dia da Semana *
+                            </label>
+                            <select id="dataVisita" required>
+                                <option value="">Selecione...</option>
+                                <option value="segunda-feira">Segunda-feira</option>
+                                <option value="terça-feira">Terça-feira</option>
+                                <option value="quarta-feira">Quarta-feira</option>
+                                <option value="quinta-feira">Quinta-feira</option>
+                                <option value="sexta-feira">Sexta-feira</option>
+                                <option value="sábado">Sábado</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ida">
+                                <i class="fas fa-map-pin"></i> Origem *
+                            </label>
+                            <input type="text" id="ida" required placeholder="Local de partida">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="destino">
+                                <i class="fas fa-flag-checkered"></i> Destino *
+                            </label>
+                            <input type="text" id="destino" required placeholder="Local de destino">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bilhetagem">
+                                <i class="fas fa-ticket-alt"></i> Tipo de Bilhetagem *
+                            </label>
+                            <select id="bilhetagem" required>
+                                <option value="">Selecione...</option>
+                                <option value="rio card">Rio Card</option>
+                                <option value="jaé">Jaé</option>
+                                <option value="caju cartão mobilidade">Caju Cartão Mobilidade</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <!-- Campo "Especifique o tipo" desativado (não é mais utilizado) -->
+                        <div id="otherField" class="form-group hidden"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modal">
+                                <i class="fas fa-subway"></i> Modal de Transporte *
+                            </label>
+                            <select id="modal" required>
+                                <option value="">Selecione a bilhetagem primeiro</option>
+                            </select>
+                        </div>
+
+                        <div id="numeroLinhaContainer" class="form-group hidden">
+                            <label for="numeroLinha">
+                                <i class="fas fa-hashtag"></i> Número da Linha
+                            </label>
+                            <input type="text" id="numeroLinha" placeholder="Ex: 123">
+                        </div>
+
+                        <div id="tipoLinhaContainer" class="form-group hidden">
+                            <label for="tipoLinha">
+                                <i class="fas fa-route"></i> Tipo de Linha
+                            </label>
+                            <select id="tipoLinha">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div id="valorContainer" class="form-group">
+                            <label for="valor">
+                                <i class="fas fa-money-bill-wave"></i> Valor (R$) *
+                            </label>
+                            <div class="valor-input-wrapper">
+                                <span class="valor-prefix">R$</span>
+                                <input type="text" id="valor" required placeholder="0,00" oninput="formatValor(this)">
+                            </div>
+                            <small class="valor-hint">Use vírgula para centavos (ex: 5,50)</small>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success btn-large">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>ADICIONAR PASSAGEM</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Lista de Passagens Registradas -->
+                <div class="passagens-list">
+                    <div class="list-header">
+                        <h3>
+                            <i class="fas fa-list-alt"></i>
+                            Passagens Registradas
+                            <span class="badge" id="totalPassagens">0</span>
+                        </h3>
+                        <div class="list-actions">
+                            <button id="exportPdfButton" class="btn btn-export">
+                                <i class="fas fa-file-pdf"></i> Exportar PDF
+                            </button>
+                            <button id="clearAllButton" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> Limpar Tudo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="reportTable">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar"></i> DIA</th>
+                                    <th><i class="fas fa-map-marker-alt"></i> ORIGEM</th>
+                                    <th><i class="fas fa-flag"></i> DESTINO</th>
+                                    <th><i class="fas fa-ticket-alt"></i> BILHETAGEM</th>
+                                    <th><i class="fas fa-subway"></i> MODAL</th>
+                                    <th><i class="fas fa-hashtag"></i> Nº LINHA</th>
+                                    <th><i class="fas fa-route"></i> TIPO DE LINHA</th>
+                                    <th><i class="fas fa-exchange-alt"></i> INTEGRAÇÃO</th>
+                                    <th><i class="fas fa-money-bill"></i> VALOR</th>
+                                    <th><i class="fas fa-cog"></i> AÇÕES</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                                <!-- Passagens serão adicionadas aqui -->
+                                <tr class="empty-row">
+                                    <td colspan="10">
+                                        <div class="empty-state">
+                                            <i class="fas fa-clipboard-list"></i>
+                                            <p>Nenhuma passagem registrada ainda</p>
+                                            <small>Adicione sua primeira passagem usando o formulário acima</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr id="reportSummaryRow" class="summary-row hidden">
+                                    <td colspan="8" class="summary-label">
+                                        <i class="fas fa-calculator"></i> MÉDIA POR PASSAGEM
+                                    </td>
+                                    <td id="mediaPorPassagemCell">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Resumo de Valores -->
+                    <div class="resumo-container">
+                        <h3>
+                            <i class="fas fa-chart-bar"></i>
+                            Resumo Financeiro
+                        </h3>
+                        <div class="resumo-grid">
+                            <div class="resumo-card">
+                                <div class="resumo-icon total">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div class="resumo-content">
+                                    <h4>Total Semanal</h4>
+                                    <p class="resumo-valor" id="totalSemanal">R$ 0,00</p>
+                                </div>
+                            </div>
+
+                            <div class="resumo-card">
+                                <div class="resumo-icon media">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <div class="resumo-content">
+                                    <h4>Média Diária</h4>
+                                    <p class="resumo-valor" id="mediaDiaria">R$ 0,00</p>
+                                </div>
+                            </div>
+
+                            <div class="resumo-card">
+                                <div class="resumo-icon dias">
+                                    <i class="fas fa-calendar-week"></i>
+                                </div>
+                                <div class="resumo-content">
+                                    <h4>Dias com Registro</h4>
+                                    <p class="resumo-valor" id="diasRegistro">0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Totais por Dia -->
+                        <div class="totais-dia">
+                            <h4><i class="fas fa-calendar-check"></i> Totais por Dia da Semana</h4>
+                            <ul id="totalsList">
+                                <!-- Totais serão exibidos aqui -->
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+            </section>
+        </main>
 
-                <div>
-                    <label for="destino">Destino:</label>
-                    <input type="text" id="destino" required>
-                </div>
-
-                
-                <div>
-                    <label for="bilhetagem">Bilhetagem:</label>
-                    <select id="bilhetagem" required onchange="Outros()">
-                        <option value="rio card">Rio Card</option>
-                        <option value="jaé">Jaé</option>
-                        <option value="outros">Outros</option>
-                    </select>
-                </div>
-                <div id="otherField" style="display:none;">
-                    <label for="other">Por favor, especifique:</label>
-                    <input type="text" id="other" name="other">
-                </div>
-                
-            
-                <div>
-                    <label for="modal">Modal:</label>
-                    <select id="modal" required>
-                        <option value="ônibus">Ônibus</option>
-                        <option value="metrô">Metrô</option>
-                        <option value="trem">Trem</option>
-                        <option value="van">Van</option>
-                        <option value="barcas">Barcas</option>
-                        <option value="BRT">BRT</option>
-                        <option value="VLT">VLT</option>
-                        <option value="a pé">A Pé</option>
-                    </select>
-                </div>
-
-                <!-- Campo Número da Linha -->
-                <div id="numeroLinhaContainer" class="hidden">
-                    <label for="numeroLinha">Número da Linha:</label>
-                    <input type="text" id="numeroLinha">
-                </div>
-
-                <!-- Campo Tipo de Linha -->
-                <div id="tipoLinhaContainer" class="hidden">
-                    <label for="tipoLinha">Tipo de Linha:</label>
-                    <select id="tipoLinha">
-                        <option value="municipal">Municipal</option>
-                        <option value="intermunicipal">Intermunicipal</option>
-                    </select>
-                </div>
-
-                <div id="valorContainer">
-                    <label for="valor">Valor:</label>
-                    <input type="text" id="valor" oninput="formatValor(this)" inputmode="decimal" />
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-placeholder small">
+                        <img src="LOGO_OFICIAL_OBJETIVA.png.png" alt="Logo Objetiva MKT" class="logo-img">
+                    </div>
 
                 </div>
+                <div class="footer-info">
+                    <p>
+                        <i class="fas fa-shield-alt"></i>
+                        Sistema seguro de registro de deslocamentos
+                    </p>
+                    <p class="footer-copyright">
+                        © 2025Sistema de Relatórios. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
 
-                <button type="submit">Adicionar Relatório</button>
-            </form>
-
-            <!-- Tabela para exibir os relatórios -->
-            <h2>RELATÓRIOS ADICIONADOS</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>DATA DA VISITA</th>
-                        <th>IDA</th>
-                        <th>DESTINO</th>
-                        <th>BILHETAGEM</th>
-                        <th>MODAL</th>
-                        <th>NÚMERO DA LINHA</th>
-                        <th>TIPO DE LINHA</th>
-                        <th>VALOR</th>
-                        <th>AÇÕES</th>
-                    </tr>
-                </thead>
-                <tbody id="reportTableBody">
-                    <!-- Relatórios serão adicionados aqui -->
-                </tbody>
-            </table>
-
-            <h3>Totais por Dia da Semana</h3>
-            <ul id="totalsList">
-                <!-- Totais serão exibidos aqui -->
-            </ul>
-
-                        <!-- Botões para exportar os relatórios -->
-            <button id="exportExcelButton">Exportar Relatórios para Excel</button>
-             <button id="exportPdfButton">Exportar Relatórios para PDF</button>
+    <!-- Modal de Integração -->
+    <div id="integracaoModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-exchange-alt"></i>
+                <h3>Integração Tarifária</h3>
+            </div>
+            <div class="modal-body">
+                <p>Valor informado: <strong id="valorIntegracao">R$ 0,00</strong></p>
+                <p class="modal-question">Este valor corresponde a uma integração tarifária?</p>
+                <div class="modal-hint">
+                    <i class="fas fa-info-circle"></i>
+                    <small>Integração: pagamento de valor reduzido para conexão entre diferentes modais</small>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btnSimIntegracao" class="btn btn-success">
+                    <i class="fas fa-check"></i> SIM, é integração
+                </button>
+                <button id="btnNaoIntegracao" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> NÃO, é valor normal
+                </button>
+            </div>
         </div>
     </div>
 
+    <!-- Modal de Confirmação de Integração -->
+    <div id="confirmacaoIntegracaoModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-edit"></i>
+                <h3>Confirmar Integração Tarifária</h3>
+            </div>
+            <div class="modal-body">
+                <div class="integracao-info">
+                    <h4><i class="fas fa-bus"></i> Primeira Passagem (será atualizada)</h4>
+                    <div class="passagem-detalhes">
+                        <p><strong>Dia:</strong> <span id="modalPrimeiraDia">-</span></p>
+                        <p><strong>Origem:</strong> <span id="modalPrimeiraOrigem">-</span></p>
+                        <p><strong>Destino:</strong> <span id="modalPrimeiraDestino">-</span></p>
+                        <p><strong>Modal:</strong> <span id="modalPrimeiraModal">-</span></p>
+                        <p><strong>Valor atual:</strong> <span id="modalPrimeiraValorAtual">R$ 0,00</span></p>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="valorIntegracaoEdit">
+                            <i class="fas fa-money-bill-wave"></i> Novo Valor da Integração (R$)
+                        </label>
+                        <div class="valor-input-wrapper">
+                            <span class="valor-prefix">R$</span>
+                            <input type="text" id="valorIntegracaoEdit" placeholder="0,00" oninput="formatValor(this)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="integracao-info"
+                    style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--light);">
+                    <h4><i class="fas fa-subway"></i> Segunda Passagem (será zerada)</h4>
+                    <div class="passagem-detalhes">
+                        <p><strong>Dia:</strong> <span id="modalSegundaDia">-</span></p>
+                        <p><strong>Origem:</strong> <span id="modalSegundaOrigem">-</span></p>
+                        <p><strong>Destino:</strong> <span id="modalSegundaDestino">-</span></p>
+                        <p><strong>Modal:</strong> <span id="modalSegundaModal">-</span></p>
+                        <p><strong>Valor:</strong> <span style="color: var(--danger); font-weight: bold;">R$ 0,00 (será
+                                zerado)</span></p>
+                    </div>
+                </div>
+
+                <div class="modal-hint" style="margin-top: 20px;">
+                    <i class="fas fa-info-circle"></i>
+                    <small>O valor da integração será aplicado à primeira passagem e a segunda será zerada.</small>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btnCancelarIntegracao" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button id="btnConfirmarIntegracao" class="btn btn-success">
+                    <i class="fas fa-check"></i> Confirmar Integração
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela Cheia de Assinatura -->
+    <div id="fullscreenSignature" class="fullscreen-signature hidden">
+        <div class="fullscreen-header">
+            <div class="header-left">
+                <i class="fas fa-signature"></i>
+                <div>
+                    <h2>Assine Aqui</h2>
+                    <p class="header-subtitle">Use o mouse ou dedo para assinar na área abaixo</p>
+                </div>
+            </div>
+            <button id="closeFullscreen" class="btn-close" aria-label="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="orientation-alert hidden" id="orientationAlert">
+            <i class="fas fa-mobile-alt"></i>
+            <p>Para melhor experiência, gire seu dispositivo para o modo paisagem</p>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="fullscreenCanvas"></canvas>
+            <div class="canvas-overlay" id="canvasOverlay">
+                <div class="overlay-icon">
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+                <p>Clique e arraste para assinar</p>
+                <small>Assine com calma, você pode limpar e refazer</small>
+            </div>
+        </div>
+
+        <div class="signature-controls">
+            <div class="control-buttons">
+                <button id="clearFullscreen" class="btn btn-limpar">
+                    <i class="fas fa-trash-alt"></i> Limpar
+                </button>
+                <button id="confirmSignature" class="btn btn-success">
+                    <i class="fas fa-check"></i> Confirmar Assinatura
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificação -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <div class="toast-message">Operação realizada com sucesso!</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Imagem oculta usada para exportação em PDF -->
+    <img id="logoPdfSource" src="LOGO_OFICIAL_OBJETIVA.png.png" alt="Logo Objetiva MKT" style="display:none;">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.18.5/package/dist/xlsx.full.min.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
