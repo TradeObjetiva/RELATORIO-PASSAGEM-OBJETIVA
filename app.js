@@ -1112,9 +1112,12 @@ document.addEventListener("DOMContentLoaded", function () {
         diasRegistro.textContent = diasUnicos;
 
         // Atualizar linha de média na tabela (média por passagem)
+        // Excluir passagens com valor 0 do cálculo
+        const passagensComValor = reports.filter(r => r.valor > 0);
         if (reportSummaryRow && mediaPorPassagemCell) {
-            if (reports.length > 0) {
-                const mediaPorPassagem = total / reports.length;
+            if (passagensComValor.length > 0) {
+                const totalComValor = passagensComValor.reduce((sum, r) => sum + r.valor, 0);
+                const mediaPorPassagem = totalComValor / passagensComValor.length;
                 mediaPorPassagemCell.textContent = `R$ ${mediaPorPassagem.toFixed(2)}`;
                 reportSummaryRow.classList.remove('hidden');
             } else {
@@ -1419,8 +1422,10 @@ document.addEventListener("DOMContentLoaded", function () {
             doc.text("PASSAGENS REGISTRADAS", 105, 20, { align: 'center' });
 
             // Montar corpo da tabela com as passagens + linha de média por passagem
-            const totalGeralPassagens = reports.reduce((sum, r) => sum + r.valor, 0);
-            const mediaPorPassagem = reports.length > 0 ? totalGeralPassagens / reports.length : 0;
+            // Excluir passagens com valor 0 do cálculo
+            const passagensComValor = reports.filter(r => r.valor > 0);
+            const totalGeralPassagens = passagensComValor.reduce((sum, r) => sum + r.valor, 0);
+            const mediaPorPassagem = passagensComValor.length > 0 ? totalGeralPassagens / passagensComValor.length : 0;
 
             const tabelaPassagens = reports.map(report => [
                 report.dataVisita,
@@ -1484,7 +1489,15 @@ document.addEventListener("DOMContentLoaded", function () {
             // Médias por tipo de bilhetagem
             const statsBilhetagem = {};
             reports.forEach(r => {
-                const key = r.bilhetagem;
+                // Ignorar passagens com valor 0 (integrações zeradas)
+                if (r.valor === 0 || r.valor === null || r.valor === undefined) {
+                    return;
+                }
+
+                // Normalizar a chave para evitar duplicatas por causa de espaços ou formatação
+                const key = (r.bilhetagem || '').trim().toUpperCase();
+                if (!key) return; // Ignorar se não houver bilhetagem
+
                 if (!statsBilhetagem[key]) {
                     statsBilhetagem[key] = { total: 0, count: 0 };
                 }
@@ -1497,15 +1510,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let yPos = 100;
             doc.setFontSize(10);
-            Object.entries(statsBilhetagem).forEach(([tipo, info]) => {
-                const mediaTipo = info.total / info.count;
-                doc.text(`${tipo}: R$ ${mediaTipo.toFixed(2)}`, 20, yPos);
-                yPos += 8;
-            });
+
+            // Ordenar por nome do tipo para exibição consistente
+            Object.entries(statsBilhetagem)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .forEach(([tipo, info]) => {
+                    // Calcular média corretamente (total / quantidade)
+                    const mediaTipo = info.count > 0 ? info.total / info.count : 0;
+                    doc.text(`${tipo}: R$ ${mediaTipo.toFixed(2)}`, 20, yPos);
+                    yPos += 8;
+                });
 
             // Médias por dia da semana
             const statsDia = {};
             reports.forEach(r => {
+                // Ignorar passagens com valor 0 (integrações zeradas)
+                if (r.valor === 0 || r.valor === null || r.valor === undefined) {
+                    return;
+                }
+
                 const diaSemana = r.dataVisita;
                 if (!statsDia[diaSemana]) {
                     statsDia[diaSemana] = { total: 0, count: 0 };
