@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const colaboradorNome = document.getElementById('colaboradorNome');
     const totalPassagens = document.getElementById('totalPassagens');
     const totalSemanal = document.getElementById('totalSemanal');
-    const mediaDiaria = document.getElementById('mediaDiaria');
     const diasRegistro = document.getElementById('diasRegistro');
     const reportSummaryRow = document.getElementById('reportSummaryRow');
     const mediaPorPassagemCell = document.getElementById('mediaPorPassagemCell');
@@ -1103,7 +1102,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const total = reports.reduce((sum, report) => sum + report.valor, 0);
         totalSemanal.textContent = `R$ ${total.toFixed(2)}`;
 
-        // Calcular média diária (excluindo passagens com valor 0)
+        // Calcular dias com registro (excluindo passagens com valor 0)
         const passagensComValor = reports.filter(r => r.valor > 0);
 
         // Total apenas com valores pagos
@@ -1113,35 +1112,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const diasComCusto = new Set(
             passagensComValor.map(r => r.dataVisita)
         ).size;
-
-        // Calcular média diária por bilhetagem e depois somar para obter média diária total
-        const statsBilhetagem = {};
-        passagensComValor.forEach(r => {
-            const key = (r.bilhetagem || '').trim().toUpperCase();
-            if (!key) return;
-
-            if (!statsBilhetagem[key]) {
-                statsBilhetagem[key] = {
-                    total: 0,
-                    dias: new Set()
-                };
-            }
-            statsBilhetagem[key].total += r.valor;
-            statsBilhetagem[key].dias.add(r.dataVisita);
-        });
-
-        // Calcular média diária por bilhetagem e somar
-        let somaMediasDiarias = 0;
-        Object.values(statsBilhetagem).forEach(info => {
-            const diasBilhetagem = info.dias.size;
-            if (diasBilhetagem > 0) {
-                const mediaDiariaBilhetagem = info.total / diasBilhetagem;
-                somaMediasDiarias += mediaDiariaBilhetagem;
-            }
-        });
-
-        const media = somaMediasDiarias;
-        mediaDiaria.textContent = `R$ ${media.toFixed(2)}`;
 
         // Atualizar dias com registro (apenas dias com custo)
         diasRegistro.textContent = diasComCusto;
@@ -1509,14 +1479,14 @@ document.addEventListener("DOMContentLoaded", function () {
             doc.addPage();
             const total = reports.reduce((sum, r) => sum + r.valor, 0);
 
-            // Calcular média diária (excluindo passagens com valor 0)
+            // Calcular estatísticas (excluindo passagens com valor 0)
             const passagensComValorPDF = reports.filter(r => r.valor > 0);
             const totalPagoPDF = passagensComValorPDF.reduce((sum, r) => sum + r.valor, 0);
             const diasComCustoPDF = new Set(
                 passagensComValorPDF.map(r => r.dataVisita)
             ).size;
 
-            // Calcular média diária por bilhetagem e depois somar para obter média diária total
+            // Calcular estatísticas por bilhetagem
             const statsBilhetagemPDF = {};
             passagensComValorPDF.forEach(r => {
                 const key = (r.bilhetagem || '').trim().toUpperCase();
@@ -1532,30 +1502,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 statsBilhetagemPDF[key].dias.add(r.dataVisita);
             });
 
-            // Calcular média diária por bilhetagem e somar
-            let somaMediasDiariasPDF = 0;
-            Object.values(statsBilhetagemPDF).forEach(info => {
-                const diasBilhetagem = info.dias.size;
-                if (diasBilhetagem > 0) {
-                    const mediaDiariaBilhetagem = info.total / diasBilhetagem;
-                    somaMediasDiariasPDF += mediaDiariaBilhetagem;
-                }
-            });
-
-            const media = somaMediasDiariasPDF;
-
             doc.setFontSize(16);
             doc.text("RESUMO FINANCEIRO", 105, 20, { align: 'center' });
 
             doc.setFontSize(12);
             doc.text(`Total de Passagens: ${reports.length}`, 20, 40);
-            doc.text(`Total Gasto: R$ ${total.toFixed(2)}`, 20, 50);
+            doc.text(`Total Gasto: R$ ${totalPagoPDF.toFixed(2)}`, 20, 50);
             doc.text(`Dias com Registro: ${diasComCustoPDF}`, 20, 60);
-            doc.text(`Média Diária (R$/dia): R$ ${media.toFixed(2)}`, 20, 70);
 
             // Médias por tipo de bilhetagem (usar statsBilhetagemPDF já calculado acima)
             doc.setFontSize(14);
-            doc.text("MÉDIA POR TIPO DE BILHETAGEM", 105, 90, { align: 'center' });
+            doc.text("MÉDIA DIÁRIA POR TIPO DE BILHETAGEM", 105, 90, { align: 'center' });
 
             let yPos = 100;
             doc.setFontSize(10);
